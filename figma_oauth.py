@@ -12,6 +12,11 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = 1800
+
 FIGMA_CLIENT_ID = os.environ["FIGMA_CLIENT_ID"]
 FIGMA_CLIENT_SECRET = os.environ["FIGMA_CLIENT_SECRET"]
 
@@ -60,6 +65,7 @@ def callback():
     if response.status_code == 200:
         token_data = response.json()
         access_token = token_data.get("access_token")
+        session.permanent = True
         session["figma_token"] = access_token
         return f"Access Token: {access_token[:20]}..."
     else:
